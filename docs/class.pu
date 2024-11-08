@@ -1,0 +1,13 @@
+@startuml Class FeedBackServo
+
+Class FeedBackServo{
++FeedBackServo(feedbackPinNumber = 2 : byte) : void
++setServoControl(servoPinNumber = 3 : byte) : void
++setKp(_Kp = 1.0 : float) : void
++rotate(degree : int, threshold = 4 : int) : void
++Angle() : int
+-pinCheck(pinNumber : byte) : void
+-{static} feedback() : void
+}
+
+@enduml
