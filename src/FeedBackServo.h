@@ -15,20 +15,21 @@ class FeedBackServo
     private:
         void pinCheck(const byte pinNumber);
         void static feedback();
-        static Servo Parallax;
-        static byte feedbackPinNumber{ 2 };
-        static volatile int angle;
-        static float thetaPre;
-        static unsigned int tHigh, tLow;
-        static unsigned long rise, fall;
-        static int turns{ 0 };
-        static float Kp{ 1.0 };
-        static const int unitsFC{ 360 };
-        static const float dcMin{ 0.029 };
-        static const float dcMax{ 0.971 };
-        static const int dutyScale{ 1 };
-        static const int q2min{ unitsFC / 4 };
-        static const int q3max{ q2min * 3 };
+
+        Servo Parallax;
+        byte feedbackPinNumber{ 2 };
+        volatile int angle;
+        float thetaPre;
+        unsigned int tHigh, tLow;
+        unsigned long rise, fall;
+        int turns{ 0 };
+        float Kp{ 1.0 };
+        const int unitsFC{ 360 };
+        const float dcMin{ 0.029 };
+        const float dcMax{ 0.971 };
+        const int dutyScale{ 1 };
+        const int q2min{ unitsFC / 4 };
+        const int q3max{ q2min * 3 };
 };
 
 #endif
