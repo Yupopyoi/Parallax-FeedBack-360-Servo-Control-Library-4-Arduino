@@ -35,9 +35,7 @@ void FeedBackServo::setKp(float _Kp)
 void FeedBackServo::rotate(int degree, int threshold)
 {
     float output, offset, value;
-    for (int errorAngle = degree - angle;
-         abs(errorAngle) > threshold;
-         errorAngle = degree - angle)
+    for (int errorAngle = degree - angle; abs(errorAngle) > threshold; errorAngle = degree - angle)
     {
         output = errorAngle * Kp;
         if (output > 200.0)

@@ -14,7 +14,7 @@ class FeedBackServo
 
     private:
         void pinCheck(const byte pinNumber);
-        void static feedback();
+        void feedback();
 
         Servo Parallax;
         byte feedbackPinNumber{ 2 };
