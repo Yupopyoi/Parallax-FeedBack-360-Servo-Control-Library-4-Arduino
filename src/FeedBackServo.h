@@ -10,11 +10,11 @@ class FeedBackServo
         void setServoControl(const byte servoPinNumber = 3);
         void setKp(const float _Kp = 1.0);
         void rotate(const int degree, const int threshold = 4);
+        void feedback();
         int Angle();
 
     private:
         void pinCheck(const byte pinNumber);
-        void feedback();
 
         Servo Parallax;
         byte feedbackPinNumber{ 2 };
