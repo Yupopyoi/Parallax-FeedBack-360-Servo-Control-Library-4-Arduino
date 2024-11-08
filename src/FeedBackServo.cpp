@@ -9,16 +9,27 @@
 #include <Servo.h>
 #include "FeedBackServo.h"
 
+FeedBackServo* currentInstance = nullptr;
+
+void handleInterrupt() {
+    if (currentInstance) {
+        currentInstance->feedback();
+    }
+}
+
 FeedBackServo::FeedBackServo(byte _feedbackPinNumber)
 {
     // feedback pin number validation
     pinCheck(_feedbackPinNumber);
     feedbackPinNumber = _feedbackPinNumber;
 
+    currentInstance = this;
+
     // convert feedback pin number to interrupt number for use on attachInterrupt function
     byte internalPinNumber = digitalPinToInterrupt(feedbackPinNumber);
 
-    attachInterrupt(internalPinNumber, feedback, CHANGE);
+    //attachInterrupt(internalPinNumber, feedback, CHANGE);
+    attachInterrupt(internalPinNumber, handleInterrupt, CHANGE);
 }
 
 void FeedBackServo::setServoControl(byte servoPinNumber)
