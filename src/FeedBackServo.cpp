@@ -1,6 +1,7 @@
 // FeedBack360 Servo Control Library 4 Arduino
 // Controll.cpp
 // Copyright © Hyoda Kazuaki
+// Copyright © Yupopyoi
 // Parallax Feedback 360° High Speed Servo is made by Parallax Inc.
 // This library is released under the MIT License.
 
@@ -79,6 +80,7 @@ int FeedBackServo::Angle()
 void FeedBackServo::pinCheck(byte _feedbackPinNumber)
 {
 // Check pin number
+// As feedback is provided using PWM signals, exit if a selected pin cannot use PWM.
 #ifdef ARDUINO_AVR_UNO
     if (_feedbackPinNumber != 2 &&
         _feedbackPinNumber != 3)
@@ -90,6 +92,12 @@ void FeedBackServo::pinCheck(byte _feedbackPinNumber)
         _feedbackPinNumber != 2 &&
         _feedbackPinNumber != 3 &&
         _feedbackPinNumber != 7)
+        exit(1);
+#endif
+#ifdef ARDUINO_AVR_MEGA2560
+    if (_feedbackPinNumber == 0 ||
+        _feedbackPinNumber == 1 ||
+        _feedbackPinNumber > 13)
         exit(1);
 #endif
 }
