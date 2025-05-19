@@ -130,6 +130,15 @@ void FeedBackServo::CheckPin(byte _feedbackPinNumber)
         _feedbackPinNumber != 7)
         exit(1);
 #endif
+#ifdef ARDUINO_AVR_MEGA2560
+    if (_feedbackPinNumber != 2 &&
+        _feedbackPinNumber != 3 &&
+        _feedbackPinNumber != 18 &&
+        _feedbackPinNumber != 19 &&
+        _feedbackPinNumber != 20 &&
+        _feedbackPinNumber != 21)
+        exit(1);
+#endif
 }
 
 void FeedBackServo::HandleFeedback()
