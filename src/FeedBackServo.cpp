@@ -4,8 +4,6 @@
 // Parallax Feedback 360° High Speed Servo is made by Parallax Inc.
 // This library is released under the MIT License.
 
-#include <Arduino.h>
-#include <Servo.h>
 #include "FeedBackServo.h"
 
 const float FeedBackServo::dcMin = 0.029;
@@ -28,12 +26,12 @@ FeedBackServo::FeedBackServo(byte _feedbackPinNumber)
         instances[interruptNumber] = this;
         switch (interruptNumber)
         {
-        case 0: attachInterrupt(0, isr0, CHANGE); break;
-        case 1: attachInterrupt(1, isr1, CHANGE); break;
-        case 2: attachInterrupt(2, isr2, CHANGE); break;
-        case 3: attachInterrupt(3, isr3, CHANGE); break;
-        case 4: attachInterrupt(4, isr4, CHANGE); break;
-        case 5: attachInterrupt(5, isr5, CHANGE); break;
+            case 0: attachInterrupt(0, isr0, CHANGE); break;
+            case 1: attachInterrupt(1, isr1, CHANGE); break;
+            case 2: attachInterrupt(2, isr2, CHANGE); break;
+            case 3: attachInterrupt(3, isr3, CHANGE); break;
+            case 4: attachInterrupt(4, isr4, CHANGE); break;
+            case 5: attachInterrupt(5, isr5, CHANGE); break;
         }
     }
 }
@@ -49,6 +47,11 @@ void FeedBackServo::SetKp(float Kp)
     FeedBackServo::Kp_ = Kp;
 }
 
+void FeedBackServo::SetKd(float Kd)
+{
+    FeedBackServo::Kd_ = Kd;
+}
+
 void FeedBackServo::SetActive(bool isActive)
 {
     isActive_ = isActive;
@@ -61,17 +64,41 @@ void FeedBackServo::SetTarget(int target)
 
 void FeedBackServo::Update(int threshold = 4)
 {
-    if (isActive_ == false) return;
+    unsigned long now = micros();
+    float dt = (now - lastUpdateMicros_) / 1000000.0f;  // [sec]
+    if (dt <= 0.0001f) dt = 0.001f;  // If "dt" is too small, the amount of change in D control is too large
+    lastUpdateMicros_ = now;
 
-    int errorAngle = targetAngle_ - angle_;
-    if (abs(errorAngle) <= threshold)
+    int error = targetAngle_ - angle_;
+    float errorF = static_cast<float>(error);
+
+    // Re-activate when the error becomes large
+    if (!isActive_ && abs(error) > (threshold + 5)) {
+        isActive_ = true;
+    }
+
+    if (abs(error) <= threshold)
     {
         Parallax.writeMicroseconds(1490);
+        previousError_ = 0.0f;
+        filteredDerivative_ = 0.0f;
+        isActive_ = false;
         return;
     }
 
-    float output = constrain(errorAngle * Kp_, -200.0, 200.0);
-    float offset = (errorAngle > 0) ? 30.0 : -30.0;
+    // Proportional Controller
+    float P = Kp_ * errorF;
+
+    // Derivative Controller
+    float rawDerivative = (errorF - previousError_) / dt;
+    filteredDerivative_ = 0.9f * filteredDerivative_ + 0.1f * rawDerivative;
+    float D = Kd_ * filteredDerivative_;
+
+    previousError_ = errorF;
+
+    // Output
+    float output = constrain(P - D, -200.0f, 200.0f);
+    float offset = (error > 0) ? 30.0f : -30.0f;
     float value = output + offset;
 
     Parallax.writeMicroseconds(1490 - value);
@@ -80,6 +107,11 @@ void FeedBackServo::Update(int threshold = 4)
 int FeedBackServo::Angle()
 {
     return angle_;
+}
+
+float FeedBackServo::Error()
+{
+    return previousError_;
 }
 
 void FeedBackServo::CheckPin(byte _feedbackPinNumber)
