@@ -16,6 +16,10 @@ public:
     void Update(int threshold = 4);
     int Angle();
     float Error();
+    int Turns();
+    float Theta();
+    unsigned int THigh();
+    unsigned int TLow();
 
 private:
     void CheckPin(byte pinNumber);
@@ -36,7 +40,7 @@ private:
     unsigned long rise = 0, fall = 0;
     int turns = 0;
 
-    float previousError_ = 0.0;
+    float previousError_ = 1000.0;
     float filteredDerivative_ = 0.0;
     unsigned long lastUpdateMicros_ = 0;
 

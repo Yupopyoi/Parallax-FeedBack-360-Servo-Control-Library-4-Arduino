@@ -114,6 +114,26 @@ float FeedBackServo::Error()
     return previousError_;
 }
 
+int FeedBackServo::Turns()
+{
+    return turns;
+}
+
+float FeedBackServo::Theta()
+{
+    return thetaPre;
+}
+
+unsigned int FeedBackServo::THigh()
+{
+    return tHigh;
+}
+
+unsigned int FeedBackServo::TLow()
+{
+    return tLow;
+}
+
 void FeedBackServo::CheckPin(byte _feedbackPinNumber)
 {
 // Check pin number
