@@ -165,20 +165,20 @@ void FeedBackServo::HandleFeedback()
 {
     if (digitalRead(feedbackPinNumber))
     {
+        // For more information, please visit https://www.pololu.com/file/0J1395/900-00360-Feedback-360-HS-Servo-v1.2.pdf
+
         rise = micros();
+        if (fall == 0 || rise <= fall) return;
         tLow = rise - fall;
 
         int tCycle = tHigh + tLow;
-        if ((tCycle < 1000) || (tCycle > 1200))
-            return;
+        if ((tCycle < 1000) || (tCycle > 1200)) return;
 
         float dc = (dutyScale * tHigh) / (float)tCycle;
+
         float theta = ((dc - dcMin) * unitsFC) / (dcMax - dcMin);
 
-        if (theta < 0.0)
-            theta = 0.0;
-        else if (theta > (unitsFC - 1.0))
-            theta = unitsFC - 1.0;
+        theta = constrain(theta, 0.0f, unitsFC - 1.0f);
 
         if ((theta < q2min) && (thetaPre > q3max))
             turns++;
@@ -195,6 +195,7 @@ void FeedBackServo::HandleFeedback()
     else
     {
         fall = micros();
+        if (rise == 0 || fall <= rise) return;
         tHigh = fall - rise;
     }
 }
