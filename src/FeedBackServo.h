@@ -28,6 +28,8 @@ public:
     FeedBackServo(byte feedbackPinNumber);
     void setServoControl(byte servoPinNumber = 3);
     void setKp(float Kp = 1.0);
+    void setKi(float Ki = 1.0);
+    void setKd(float Kd = 1.0);
     void setActive(bool isActive);
     void setTarget(int target);
     void update(int threshold = 4);
@@ -47,6 +49,9 @@ private:
     byte interruptNumber_;
 
     float Kp_ = 1.0;
+    float Ki_ = 0.0;
+    float Kd_ = 0.1;
+
     bool isActive_ = true;
     int targetAngle_;
 
@@ -57,6 +62,9 @@ private:
     int turns_ = 0;
 
     volatile bool feedbackUpdated_ = false;
+
+    float integral_ = 0.0;
+    float prevError_ = 0.0;
 
     static const int UNITS_FC = 360; // Full Circle
     static const float DC_MIN;

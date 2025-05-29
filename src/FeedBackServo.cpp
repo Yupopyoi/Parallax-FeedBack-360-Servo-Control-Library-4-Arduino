@@ -48,6 +48,16 @@ void FeedBackServo::setKp(float Kp)
     FeedBackServo::Kp_ = Kp;
 }
 
+void FeedBackServo::setKi(float Ki)
+{
+    FeedBackServo::Ki_ = Ki;
+}
+
+void FeedBackServo::setKd(float Kd)
+{
+    FeedBackServo::Kd_ = Kd;
+}
+
 void FeedBackServo::setActive(bool isActive)
 {
     isActive_ = isActive;
@@ -68,13 +78,21 @@ void FeedBackServo::update(int threshold = 4)
     int errorAngle = targetAngle_ - angle_;
     if (abs(errorAngle) <= threshold)
     {
+        integral_ = 0;
+        prevError_ = 0;
         parallax_.writeMicroseconds(1490);
         return;
     }
 
-    // NOTE: Using simple P-control.
-    // TODO: PID control may improve stability and response.
-    float output = constrain(errorAngle * Kp_, -200.0, 200.0);
+    // ===== PID Control =====
+    float error = static_cast<float>(errorAngle);
+    integral_ += error;
+    float derivative = error - prevError_;
+    prevError_ = error;
+
+    float output = (Kp_ * error) + (Ki_ * integral_) + (Kd_ * derivative);
+    output = constrain(output, -200.0f, 200.0f);
+
     float offset = (errorAngle > 0) ? 30.0 : -30.0;
     float value = output + offset;
 
